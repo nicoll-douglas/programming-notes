@@ -24,6 +24,13 @@
    3. [Method References](#63-method-references)
 7. [OOP](#7-oop)
    1. [Inheritance](#71-inheritance)
+   2. [Encapsulation](#72-encapsulation)
+   3. [Polymorphism](#73-polymorphism)
+   4. [Abstraction](#74-abstraction)
+8. [Access Modifiers](#8-access-modifiers)
+   1. [About Access Modifiers](#81-about-access-modifiers)
+   2. [Main Modifiers](#82-main-modifiers)
+   3. [Summary](#83-summary)
 
 ## 1. Data Types & Variables
 
@@ -352,10 +359,110 @@ p.getName(); // get method provides access, returns "Bob",
 p.setName("John"); // set method allows modification, sets p.name to "John",
 ```
 
-### 7.2 Polymorphism
+### 7.3 Polymorphism
 
-- Allows one
+- Allows one interface to be used for a general class of actions
+- In simpler terms an interface or method can take on many forms on a need-to basis
 
-#### Compile-time Polymorphism
+#### Compile-time Polymorphism (Static)
 
 - Achieved by method overloading
+
+#### Run-time Polymorphism (Dynamic)
+
+- Achieved by method overriding
+- Happens during runtime where the object determines which method to invoke
+
+e.g:
+
+```java
+class Animal {
+  public void makeSound() {
+    System.out.println("Animal makes a sound");
+  }
+}
+
+class Dog extends Animal {
+  @Override
+  public void makeSound() {
+    System.out.println("Dog barks");
+  }
+}
+
+Animal dog = new Dog();
+Animal a = new Animal();
+
+dog.makeSound(); // "Dog barks", object type is Dog
+a.makeSound();  // "Animal makes a sound", object type is Animal
+```
+
+### 7.4 Abstraction
+
+- Abstraction hides the complex implementation details of the object and only exposes the essential features of the object
+- Achieved with **abstract classes** or **interfaces**
+
+#### Abstract Classes & Interfaces
+
+- Abstract classes are classes that cannot be instantiated and are specified with the `abstract` keyword
+- They may have both abstract methods (unimplemented) and concrete methods (implemented)
+- Interfaces typically only contain abstract methods to be implemented by classes
+- Abstract methods should be implemented by an adopting class
+- If not all abstract methods implemented, then the class **must** be defined with `abstract`
+- A class can use the `implements` keyword to implement an interface (multiple can be implemented with comma separation)
+
+#### Example of abstraction:
+
+```java
+abstract class Animal {
+  public abstract void makeSound();
+}
+
+// class is not abstract since all methods implemented
+class Dog extends Animal {
+  // method is given concrete implementation
+  @Override
+  public void makeSound() {
+    System.out.println("Dog barks");
+  }
+}
+```
+
+## 8. Access Modifiers
+
+### 8.1 About Access Modifiers
+
+- Used to specify the visibility of methods, variables and constructors (also called members)
+- Controls where they can be accessed from
+- Top level classes can only specified as public or package-private by default
+- Nested classes can be specified with any modifier (since they count as members)
+
+### 8.2 Main Modifiers
+
+#### `Public`
+
+- The member can be accessed from any other class, inside or outside the package
+
+#### `Protected`
+
+- The member is accessible to all classes within the same package and by all subclasses (even if the class is in a different package)
+
+#### `Private`
+
+- The member is only accessible within the same class (or class body)
+- Private fields and methods cannot be accessed from any other class including subclasses
+
+#### **Default** (no modifier)
+
+- The member can be accessed from any other class in the package, but not from outside the package
+- Is also referred to as "package-private"
+
+### 8.3 Summary
+
+- A summary of the level of the access a program has to members of a class with the specified modifier
+
+| Modifier    | Within Class | Same Package | Subclass (Different Package) | Outside Package |
+| ----------- | ------------ | ------------ | ---------------------------- | --------------- |
+| `public`    | Yes          | Yes          | Yes                          | Yes             |
+| `protected` | Yes          | Yes          | Yes                          | No              |
+| default     | Yes          | Yes          | No                           | No              |
+| `private`   | Yes          | No           | No                           | No              |
