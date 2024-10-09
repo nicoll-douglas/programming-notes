@@ -7,6 +7,7 @@
 2. [Type Casting](#2-type-casting)
    1. [Implicit Casting (Widening)](#21-implicit-casting-widening)
    2. [Explicit Casting (Narrowing)](#22-explicit-casting-narrowing)
+   3. [Boolean Contexts](#23-boolean-contexts)
 3. [Operators & Booleans](#3-operators--booleans)
    1. [Comparison](#31-comparison)
    2. [null](#32-null)
@@ -124,7 +125,7 @@ Object o = new Object();
 1. **double → float → long → int → short → byte**
 2. **double → float → long → int → char**
 
-### Boolean Contexts
+### 2.3 Boolean Contexts
 
 - In a boolean context such as an `if` conditional or ternary operator, expression **must** evaluate to a boolean
 - In such scenarios, automatic conversion **does not** occur for non-boolean types and throws an error (unlike JS)
@@ -212,6 +213,14 @@ int[] numbers = new int[5]; // array of size 5: {0, 0, 0, 0, 0}
 
 ```java
 int[] numbers = {1, 2, 3, 4, 5};
+```
+
+#### Method 3
+
+- `new` keyword must be used to intialise anonymous arrays
+
+```java
+someMethod(new int[]{1, 4}); // uses new keyword
 ```
 
 ## 6. Functions
