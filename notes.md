@@ -11,6 +11,8 @@
    1. [Implicit Casting (Widening)](#21-implicit-casting-widening)
    2. [Explicit Casting (Narrowing)](#22-explicit-casting-narrowing)
    3. [Boolean Contexts](#23-boolean-contexts)
+   4. [Upcasting](#24-upcasting)
+   5. [Downcasting](#25-downcasting)
 3. [Operators & Keywords](#3-operators--keywords)
    1. [Equality](#31-equality)
    2. [`null`](#32-null)
@@ -266,6 +268,78 @@ int value = num; // Integer instance converted to primitive value
 
 - In a boolean context such as an `if` conditional or ternary operator, expression **must** evaluate to a boolean
 - In such scenarios, automatic conversion **does not** occur for non-boolean types and throws an error (unlike JS)
+
+### 2.4 Upcasting
+
+#### Key Points:
+
+- The processing of converting a reference of a subclass type to a reference of its superclass type
+- It is a form of implicit casting so happens automatically (every object of a subclass is also an object of a superclass)
+- After upcasting, you can only access the fields and methods defined in the superclass (unless overriden in the subclass, then the overriden method is inferred and used at runtime AKA run-time polymorphism)
+- In this regard you can treat objects of subclasses as objects of their superclass to call their overriden methods (perhaps when working with collections, method params or interfaces)
+
+#### Example:
+
+```java
+class Animal {
+  void makeSound() {
+    System.out.println("Animal makes a sound");
+  }
+}
+
+class Dog extends Animal {
+  void bark() {
+    System.out.println("Dog barks");
+  }
+}
+
+Dog dog = new Dog(); // dog has access to .makeSound() and .bark()
+Animal a = dog; // Dog object reference is upcasted, now only has access to .makeSound() since it is now an Animal reference
+
+Animal b = new Dog(); // immediate upcasting of a Dog object reference
+```
+
+### 2.5 Downcasting
+
+#### Key Notes:
+
+- The process of converting a reference of a superclass type to a reference of a subclass type
+- It is a form of explicit casting, happens manually
+- Can be unsafe and throw a `ClassCastException` if the object being downcasted is not an instance of the expected subclass
+- Only valid when the object actually belongs to the subclass type
+- Typically used when you know the actual object type at runtime and need to access subclass-specific fields and methods
+
+#### Example:
+
+```java
+class Animal {
+  void makeSound() {
+    System.out.println("Animal makes a sound");
+  }
+}
+
+class Dog extends Animal {
+  void bark() {
+    System.out.println("Dog barks");
+  }
+}
+
+Animal animal = new Dog(); // immediately upcasted, animal only has access to .makeSound()
+Dog dog = (Dog) animal; // animal object is downcasted, now has access to .bark() as well since it was an upcasted Dog
+```
+
+#### Safe Downcasting:
+
+```java
+Animal animal = new Dog();
+
+if (animal instanceof Dog) {
+    Dog dog = (Dog) animal;  // safe downcast
+    dog.bark();
+} else {
+    System.out.println("The animal is not a dog.");
+}
+```
 
 ## 3. Operators & Keywords
 
