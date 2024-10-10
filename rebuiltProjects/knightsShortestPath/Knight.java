@@ -21,10 +21,6 @@ public class Knight {
     this.position = position;
   }
 
-  public int[] position() {
-    return this.position;
-  }
-
   public static ArrayList<int[]> getPossibleMoves(int[] initialPosition) {
     int x = initialPosition[0];
     int y = initialPosition[1];
