@@ -1,18 +1,21 @@
 # Java Notes
 
-1. [Data Types & Variables](#1-data-types--variables)
+1. [Variables, Data Types & Classes](#1-variables-data-types--classes)
    1. [Variables](#11-variables)
-   2. [Primitive Types](#12-primitive-types)
-   3. [Reference Types (Objects)](#13-reference-types-objects)
+   2. [Enums](#12-enums)
+   3. [Primitive Types](#13-primitive-types)
+   4. [Reference Types (Objects)](#14-reference-types-objects)
+   5. [Wrapper Classes](#15-wrapper-classes)
+   6. [Class Constructors](#16-class-constructors)
 2. [Type Casting](#2-type-casting)
    1. [Implicit Casting (Widening)](#21-implicit-casting-widening)
    2. [Explicit Casting (Narrowing)](#22-explicit-casting-narrowing)
    3. [Boolean Contexts](#23-boolean-contexts)
-3. [Operators & Booleans](#3-operators--booleans)
-   1. [Comparison](#31-comparison)
-   2. [null](#32-null)
-   3. [switch](#33-switch)
-   4. [instanceof](#34-instanceof)
+3. [Operators & Keywords](#3-operators--keywords)
+   1. [Equality](#31-equality)
+   2. [`null`](#32-null)
+   3. [`switch`](#33-switch)
+   4. [`instanceof`](#34-instanceof)
    5. [XOR](#35-xor)
 4. [Loops](#4-loops)
    1. [For-each Loop](#41-for-each-loop)
@@ -28,12 +31,13 @@
    2. [Encapsulation](#72-encapsulation)
    3. [Polymorphism](#73-polymorphism)
    4. [Abstraction](#74-abstraction)
-8. [Access Modifiers](#8-access-modifiers)
-   1. [About Access Modifiers](#81-about-access-modifiers)
-   2. [Main Modifiers](#82-main-modifiers)
-   3. [Summary](#83-summary)
+   5. [Interfaces](#75-interfaces)
+   6. [Association](#76-association)
+8. [Packages](#8-packages)
+   1. [About Packages](#81-about-packages)
+   2. [Access Modifiers](#82-access-modifiers)
 
-## 1. Data Types & Variables
+## 1. Variables, Data Types & Classes
 
 ### 1.1 Variables
 
@@ -48,11 +52,89 @@ int j = 10; // in one step
 int x, y, z = 10; // in one line
 ```
 
-### 1.2 Primitive Types
+### 1.2 Enums
+
+#### Key Notes:
+
+- Enum is a special type (similar to a class) to denote a group of constants and is denoted with uppercase starting letter
+- Enums can have fields, methods, constructors, nested classes, interfaces and enums like other classes
+- Type safe so you can only assign enum values to variables of the same enum type
+- Enums are immutable, cannot add or remove values once created (implicitly `public`, `static` and `final`)
+- Cannot instantiate new enums, instances are created when the enum is loaded
+- Enums inherit methods from the `java.lang.Enum` class
+- Java also provides several built in enums (e.g `java.time.Month`)
+
+#### Example:
+
+```java
+public enum Day {
+  MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY;
+}
+```
+
+#### Fields, Methods & Constructors in Enums
+
+- Fields in Enums can store additional information about each constant
+- Enum constructors are used to initialise these values
+- Enum constructors are implicitly `private` and cannot take on any other access modifier
+- Enum constructors are called once per constant
+- Enums can have instance and static methods to be called on the constants or the enum itself
+- For instance members, `this` refers to the current constant
+
+E.g:
+
+```java
+public enum Fruit {
+  // constants use the Fruit constructor
+  APPLE("Red"),
+  BANANA("Yellow");
+
+  public final String color; // stores color of fruit constant
+
+  Fruit(String color) {
+    this.color = color;
+  }
+}
+
+Fruit fruit = Fruit.APPLE;
+fruit.color; // returns "Red"
+```
+
+#### Advanced Enums
+
+- Enums can implement interfaces much like classes
+- Enums can also have its own abstract methods
+- Each enum constant must provide its own custom implementation of all the abstract methods from their source
+
+##### Example:
+
+```java
+public enum Operation {
+  // if using a constructor, just utilise the syntax as normal to initiliase the instance fields
+  ADD {
+    @Override
+    public int apply(int x, int y) {
+      return x + y;
+    }
+  },
+  SUBTRACT {
+    @Override
+    public int apply(int x, int y) {
+      return x - y;
+    }
+  }
+
+  public abstract int apply(int x, int y);
+}
+```
+
+### 1.3 Primitive Types
+
+#### Key Points:
 
 - All primitive types passed by value
 
-#### Integers
+#### Integer Types:
 
 ```java
 byte b = 12; // 1 byte
@@ -63,7 +145,7 @@ long l = 100L; // 8 bytes
 
 - int and long default to int, specify L to declare as long
 
-#### Floats
+#### Float Types:
 
 ```java
 float f = 100.23f; // 4 bytes
@@ -72,18 +154,20 @@ double d = 100.23; // 8 bytes
 
 - float and double default to double, specify f to declare as float
 
-#### Non-numerics
+#### Non-numeric Types:
 
 ```java
 boolean b = true; // 1 bit
 char c = 'c'; // 2 bytes (\u0000 to \uFFFF so UTF-16)
 ```
 
-### 1.3 Reference Types (Objects)
+### 1.4 Reference Types (Objects)
+
+#### Key Points:
 
 - All reference types passed by reference
 
-#### Strings
+#### Strings:
 
 ```java
 String s = "hello world";
@@ -94,20 +178,71 @@ String s = "hello world";
 - Strings that are instatiated have a separate reference in the heap
 - Strings are immutable (but can be reassigned normally)
 
-#### Objects
+#### Objects:
 
 ```java
 Object o = new Object();
 ```
 
+### 1.5 Wrapper Classes
+
+#### Key Notes:
+
+- Each primitive type in Java has a wrapper class when you need object representations
+- Each wrapper class has a method to return the primitive value representation (e.g `.intValue()` for `Integer`)
+- Wrapper classes can also provide useful utility methods for operating on their primitives (e.g `Integer.parseInt(String)`)
+- Some wrapper classes cache values (e.g integer-type wrappers cache values in the range -128 and 127 so they return the same reference)
+
+#### Usage example:
+
+```java
+// must use wrapper class in the generic (array lists only allow reference types)
+ArrayList<Integer> numbers = new ArrayList<>();
+```
+
+#### Value Caching:
+
+- Integer-type wrappers (`Byte`, `Short`, `Integer`, `Long`) cache objects in the value range -128 to 127 so they return the same reference
+- `Character` caches character objects in the range 0 to 127
+- `Boolean` caches `true` and `false` (same reference returned)
+- No caching occures for `Float` and `Double`
+
+#### Autoboxing & Unboxing
+
+- Lets you immediately/automatically convert from a primitive to a wrapper or vice-versa
+
+e.g:
+
+```java
+// Autoboxing
+Integer num = 5; // int converted to Integer instance
+
+// Unboxing
+int value = num; // Integer instance converted to primitive value
+```
+
+### 1.6 Class Constructors
+
+#### Default Class Constructors
+
+- If a class doesn't define a constructor, a default is generated by the compiler
+- Default class constructors initialise instance variables to their default values and takes no arguments
+- It implicitly calls `super()` for the corresponding parent constructor if the class is a sub-class
+
+#### Constructor Chaining
+
+- When a class has an overloaded constructor, it can use `this()` to invoke the corresponding constructor as a shorthand
+
 ## 2. Type Casting
 
 ### 2.1 Implicit Casting (Widening)
 
+#### Key Points:
+
 - Converting from smaller-size type to larger size-type that results in no data loss and can accomodate it
 - When adding characters or numbers with strings, they get upgraded to a string to return a string
 
-#### Valid Casts
+#### Valid Casts:
 
 1. **byte → short → int → long → float → double**
 2. **char → int → long → float → double**
@@ -117,10 +252,12 @@ Object o = new Object();
 
 ### 2.2 Explicit Casting (Narrowing)
 
+#### Key Points:
+
 - Converting from larger-size type to smaller size-type that results in data loss since it can't accomodate it
 - Any data outside the size range gets "chopped off" and then converted by according value
 
-#### Casts
+#### Casts:
 
 1. **double → float → long → int → short → byte**
 2. **double → float → long → int → char**
@@ -130,22 +267,25 @@ Object o = new Object();
 - In a boolean context such as an `if` conditional or ternary operator, expression **must** evaluate to a boolean
 - In such scenarios, automatic conversion **does not** occur for non-boolean types and throws an error (unlike JS)
 
-## 3. Operators & Booleans
+## 3. Operators & Keywords
 
-### 3.1 Comparison
+### 3.1 Equality
 
 - `==` and `!=` operators compare primitives by value and objects by reference
 - String literals that are equal return the same reference from the string pool
 - Comparison can be made with `.equals()` methods that may perform custom implementations
 - When doing arithmetic comparison, smaller types are [implicitly casted](#implicit-casting-widening) or "promoted" upwards for accurate comparison
 
-### 3.2 null
+### 3.2 `null`
 
 - `null` indicates the absence of an object reference
 - `null` **can only** be assigned to reference types
 - `null == null` evaluates to `true`
+- `null` gets "cast" to string when concatenating with a string
 
-### 3.3 switch
+### 3.3 `switch`
+
+#### Key Points:
 
 - Switch statements are compared by value
 - For strings or wrappers, they are compared with `.equals()`
@@ -159,7 +299,7 @@ Object o = new Object();
 - **String** (both literal and Object)
 - **enum** values
 
-### 3.4 instanceof
+### 3.4 `instanceof`
 
 - `instanceof` returns `true` if the object is an instance of the specified class
 - Returns `true` if the object implements the specified interface
@@ -176,6 +316,8 @@ a ^ b // returns exclusive or (XOR) value
 ## 4. Loops
 
 ### 4.1 For-each Loop
+
+#### Key Points:
 
 - Used to iterate over an array or a collection that implements the `Iterable` interface
 - The loop variable cannot be modified unless it is a mutable object (throws exception otherwise)
@@ -201,7 +343,7 @@ for (type element : collection) {
 
 ### 5.2 Creating Arrays
 
-#### Method 1
+#### Method/Case 1:
 
 - Array values default to the default value of their type (i.e `0` for int, `false` for boolean and `null` for objects)
 
@@ -209,13 +351,13 @@ for (type element : collection) {
 int[] numbers = new int[5]; // array of size 5: {0, 0, 0, 0, 0}
 ```
 
-#### Method 2
+#### Method/Case 2:
 
 ```java
 int[] numbers = {1, 2, 3, 4, 5};
 ```
 
-#### Method 3
+#### Method/Case 3:
 
 - `new` keyword must be used to intialise anonymous arrays
 
@@ -227,10 +369,12 @@ someMethod(new int[]{1, 4}); // uses new keyword
 
 ### 6.1 Method Overloading
 
+#### Key Points:
+
 - Methods have signatures which is the method name and types/number of parameters
 - Methods can be "overloaded" to accept different parameters
 
-#### e.g:
+#### Example:
 
 ```java
 // method that gets called depends on the arguments
@@ -246,12 +390,15 @@ static double add(double x, double y) {
 
 ### 6.2 Lambda Expressions
 
+#### Key Points:
+
 - Anonmyous functions typically passed as arguments to methods (like JS arrow functions)
+- Lamda expressions can also be returned from methods (as long as there is a matching return type)
 - Parameter types don't have to be specified if they can be inferred from the interface
 - Can be stored in variables if type is a functional interface (interface with exactly one abstract method)
 - Override methods do not count towards the abstract method count in an interface
 
-#### Common functional interfaces:
+#### Common Functional Interfaces:
 
 - **Supplier\<T>** (method: get, takes none, returns any)
 - **BiFunction\<T, U, R>** (method: apply, takes any 2, returns any)
@@ -259,7 +406,7 @@ static double add(double x, double y) {
 - **Predicate\<T>** (method: test, takes any, returns bool)
 - **Consumer\<T>** (method: accept, takes any, returns none)
 
-#### Assigment example:
+#### Assigment Example:
 
 ```java
 Predicate<Integer> greaterThan5 = (x) -> x > 5; // param type inferred from interface
@@ -268,25 +415,27 @@ greaterThan5.test(3) // test is the abstract method, returns false
 
 ### 6.3 Method References
 
+#### Key Points:
+
 - Can be a lambda shorthand since it simply calls a predefined method
 
 #### Types:
 
-1. Ref to static method (`ClassName::staticMethod`)
-2. Ref to instance method (`instance::instanceMethod`)
-3. Ref to instance method of arbitrary object of particular type (`ClassName::instanceMethod`)
-4. Ref to constructor (`ClassName::new`)
+1. Reference to static method (`ClassName::staticMethod`)
+2. Reference to instance method (`instance::instanceMethod`)
+3. Reference to instance method of arbitrary object of particular type (`ClassName::instanceMethod`)
+4. Reference to constructor (`ClassName::new`)
 
 #### Examples:
 
-Static method:
+##### Static method:
 
 ```java
 Function<Double, Double> sqrtRef = Math::sqrt;
 // same as (x) -> Math.sqrt(x)
 ```
 
-Instance method:
+##### Instance method:
 
 ```java
 Consumer<String> printlnRef = System.out::println;
@@ -294,14 +443,14 @@ Consumer<String> printlnRef = System.out::println;
 // same as (s) -> System.out.println(s)
 ```
 
-Instance method, arbitrary object:
+##### Instance method, arbitrary object:
 
 ```java
 Function<String, Integer> lengthRef = String::length;
 // same as (s) -> s.length()
 ```
 
-Constructor:
+##### Constructor:
 
 ```java
 Supplier<Object> constructorRef = Object::new;
@@ -312,11 +461,14 @@ Supplier<Object> constructorRef = Object::new;
 
 ### 7.1 Inheritance
 
+#### Key Points:
+
 - Allows classes to inherit fields and methods from other classes
 - The `extends` keyword allows classes to inherit all methods and properties from its parent class (super class)
-- Subclasses must use the `super` keyword
+- Subclasses must use the `super` keyword in the constructor
+- Inheritance represents a unidirectional "is-a" relationship, where if A inerhits/extends B, an A is a B but a B is not an A
 
-e.g:
+#### Example:
 
 ```java
 class Animal {
@@ -339,10 +491,12 @@ d.legCount; // evaluates to 2, Dog inherits legCount field
 
 ### 7.2 Encapsulation
 
+#### Key Points:
+
 - Data fields and methods are bundled into a singular class
 - Access to fields and methods can be restricted to hide the internal state of the object
 
-e.g:
+#### Example:
 
 ```java
 class Person {
@@ -369,6 +523,8 @@ p.setName("John"); // set method allows modification, sets p.name to "John",
 ```
 
 ### 7.3 Polymorphism
+
+#### Key Points:
 
 - Allows one interface to be used for a general class of actions
 - In simpler terms an interface or method can take on many forms on a need-to basis
@@ -407,17 +563,17 @@ a.makeSound();  // "Animal makes a sound", object type is Animal
 
 ### 7.4 Abstraction
 
+#### Key Points:
+
 - Abstraction hides the complex implementation details of the object and only exposes the essential features of the object
 - Achieved with **abstract classes** or **interfaces**
 
-#### Abstract Classes & Interfaces
+#### Abstract Classes
 
 - Abstract classes are classes that cannot be instantiated and are specified with the `abstract` keyword
 - They may have both abstract methods (unimplemented) and concrete methods (implemented)
-- Interfaces typically only contain abstract methods to be implemented by classes
 - Abstract methods should be implemented by an adopting class
 - If not all abstract methods implemented, then the class **must** be defined with `abstract`
-- A class can use the `implements` keyword to implement an interface (multiple can be implemented with comma separation)
 
 #### Example of abstraction:
 
@@ -436,36 +592,119 @@ class Dog extends Animal {
 }
 ```
 
-## 8. Access Modifiers
+### 7.5 Interfaces
 
-### 8.1 About Access Modifiers
+#### Key Points:
+
+- Defines a set of methods as a characteristic that a class can implement
+- Abstract methods are implicitly `public` and **cannot** be defined otherwise; only static methods may have other modifiers
+- Classes can implement multiple interfaces (comma separation) allowing Java to overcome limitation of single inheritance (a class can only extend one other class)
+- Constants in interfaces are implicitly `public`, `static` and `final` but can be defined otherwise (but not instance fields)
+- The `@FunctionalInterface` directive can be used to indicate a functional interface you define
+- Interfaces can inherit from other interfaces like classes with the `extends` keyword
+
+#### Types of Methods:
+
+- **Abstract** - a method with no body; must be given implementations in a class otherwise the class has to be defined with `abstract`
+- **Static** - a method that can be called on the interface itself
+- **Default** - a method with a default implementation; can be overriden by the implementing class (declared with the `default` keyword)
+
+### 7.6 Association
+
+#### Types of Association
+
+##### General Association
+
+- One class uses or interacts with another class or knows about it
+- Can be unidirectional or bidirectional and one class may depend on another
+- General association means the objects have independent lifecycles
+- They communicate or interact with each other but there is no ownership
+
+##### Aggregation
+
+- Type of association that is represented by a "has-a" relationship with **loose coupling**
+- A class A object can **aggregate** class B objects but if object A is removed, the class B objects can still exist independently (they are significant enough)
+- The part can exist independently of the whole
+
+##### Composition
+
+- Type of association that is represented by a "has-a" relationship with **strong coupling** and **ownernship** ("contained-by" relationship)
+- The lifetime of the part depends on the whole
+- If the whole is deleted, the parts are also deleted
+- The part cannot exist independently of the whole
+
+## 8. Packages
+
+### 8.1 About Packages
+
+#### Key Points:
+
+- Groups related classes, interfaces and sub-packages together
+- Provides namespacing and access control
+- Think of and structure packages like folders (packages create organisation)
+
+#### Syntax:
+
+##### /myPackageName/\*
+
+```java
+package myPackageName;
+
+// imports
+
+// class definition
+```
+
+##### /myPackageName/subPackage/\*
+
+```java
+package myPackageName.subPackage;
+
+// imports
+
+// class definition
+```
+
+#### Common Packages:
+
+- `java.lang` - Contains fundamental classes like `String`, `Math`, `Object`, etc. (implicitly imported)
+- `java.util` - Contains utility classes like `ArrayList`, `HashMap`, `Date`, etc.
+- `java.io` - Contains classes for file input/output operations (`File`, `BufferedReader`, etc.).
+- `java.nio` - Provides classes for more efficient I/O operations (New I/O API).
+- `java.net` - Contains networking classes like `Socket`, `URL`, etc.
+- `java.sql` - Provides classes for working with databases (JDBC).
+- `javax.swing` - Contains classes for building GUI applications (e.g., `JFrame`, `JButton`).
+
+### 8.2 Access Modifiers
+
+#### Key Points:
 
 - Used to specify the visibility of methods, variables and constructors (also called members)
 - Controls where they can be accessed from
 - Top level classes can only specified as public or package-private by default
 - Nested classes can be specified with any modifier (since they count as members)
 
-### 8.2 Main Modifiers
+#### Main Modifiers:
 
-#### `Public`
+##### `public`
 
 - The member can be accessed from any other class, inside or outside the package
 
-#### `Protected`
+##### `protected`
 
 - The member is accessible to all classes within the same package and by all subclasses (even if the class is in a different package)
 
-#### `Private`
+##### `private`
 
 - The member is only accessible within the same class (or class body)
 - Private fields and methods cannot be accessed from any other class including subclasses
 
-#### **Default** (no modifier)
+##### **Default** (no modifier)
 
 - The member can be accessed from any other class in the package, but not from outside the package
 - Is also referred to as "package-private"
 
-### 8.3 Summary
+#### Summary
 
 - A summary of the level of the access a program has to members of a class with the specified modifier
 
