@@ -40,6 +40,10 @@
 8. [Packages](#8-packages)
    1. [About Packages](#81-about-packages)
    2. [Access Modifiers](#82-access-modifiers)
+9. [Exception Handling](#9-exception-handling)
+   1. [Checked Exceptions](#91-checked-exceptions)
+   2. [Unchecked Exceptions](#92-unchecked-exceptions)
+   3. [Errors](#93-errors)
 
 ## 1. Variables, Data Types & Classes
 
@@ -794,37 +798,25 @@ package myPackageName.subPackage;
 
 ## 9. Exception Handling
 
-### 9.1 Exceptions
+### 9.1 Checked Exceptions
 
-#### Checked Exceptions
+#### Key Notes:
 
 - Exceptions that are checked at compile-time
 - If a method can throw a checked exception, it **must** be handled by a `try-catch` block or declare it in the method's `throws` clause
 - Exception classes inherit from `java.lang.Exception`
 
-E.g:
+#### Example:
 
 ```java
 import java.io.*;
 
 try {
-  // throws exception if file.txt doesn't exist during compilation
+  // throws checked exception if file.txt doesn't exist during compilation
   FileReader file = new FileReader("file.txt");
 } catch (FileNotFoundException e) {
   e.printStackTrace();
 }
-```
-
-#### Unchecked Exceptions
-
-- Exceptions that occur during runtime and are not checked at compile-time
-- Usually indicate bugs such as logic errors
-
-E.g:
-
-```java
-int[] arr = new int[5];
-System.out.println(arr[10]); // throws ArrayIndexOutOfBoundsException
 ```
 
 #### `try-catch`
@@ -849,7 +841,21 @@ public void readFile() throws IOException {
 }
 ```
 
-### 9.2 Errors
+### 9.2 Unchecked Exceptions
+
+#### Key Notes:
+
+- Exceptions that occur during runtime and are not checked at compile-time
+- Usually indicate bugs such as logic errors
+
+#### Example:
+
+```java
+int[] arr = new int[5];
+System.out.println(arr[10]); // throws ArrayIndexOutOfBoundsException at runtime
+```
+
+### 9.3 Errors
 
 #### Key Notes:
 
