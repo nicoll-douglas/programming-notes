@@ -1,10 +1,12 @@
 # Java Notes
 
+## Table of Contents
+
 1. [Variables, Data Types & Classes](#1-variables-data-types--classes)
    1. [Variables](#11-variables)
-   2. [Enums](#12-enums)
-   3. [Primitive Types](#13-primitive-types)
-   4. [Reference Types (Objects)](#14-reference-types-objects)
+   2. [Primitive Types](#12-primitive-types)
+   3. [Reference Types (Objects)](#13-reference-types-objects)
+   4. [Enums](#14-enums)
    5. [Wrapper Classes](#15-wrapper-classes)
    6. [Class Constructors](#16-class-constructors)
 2. [Type Casting](#2-type-casting)
@@ -44,6 +46,7 @@
 ### 1.1 Variables
 
 - Variables **must** be initiliased before utilisation
+- When uninitialised fields are read from objects they take on their default values
 
 ```java
 int i; // declared
@@ -54,7 +57,63 @@ int j = 10; // in one step
 int x, y, z = 10; // in one line
 ```
 
-### 1.2 Enums
+### 1.2 Primitive Types
+
+#### Key Points:
+
+- All primitive types passed by value
+
+#### Integer Types:
+
+```java
+byte b = 12; // 1 byte
+short s = 236; // 2 bytes
+int i = 153; // 4 bytes
+long l = 100L; // 8 bytes
+```
+
+- int and long default to int, specify L to declare as long
+
+#### Float Types:
+
+```java
+float f = 100.23f; // 4 bytes
+double d = 100.23; // 8 bytes
+```
+
+- float and double default to double, specify f to declare as float
+
+#### Non-numeric Types:
+
+```java
+boolean b = true; // 1 bit
+char c = 'c'; // 2 bytes (\u0000 to \uFFFF so UTF-16)
+```
+
+### 1.3 Reference Types (Objects)
+
+#### Key Points:
+
+- All reference types passed by reference
+
+#### Strings:
+
+```java
+String s = "hello world";
+```
+
+- When initiliased with a string literal, string object lives in the string pool
+- Any other string literals declared return the same reference
+- Strings that are instatiated have a separate reference in the heap
+- Strings are immutable (but can be reassigned normally)
+
+#### Objects:
+
+```java
+Object o = new Object();
+```
+
+### 1.4 Enums
 
 #### Key Notes:
 
@@ -128,62 +187,6 @@ public enum Operation {
 
   public abstract int apply(int x, int y);
 }
-```
-
-### 1.3 Primitive Types
-
-#### Key Points:
-
-- All primitive types passed by value
-
-#### Integer Types:
-
-```java
-byte b = 12; // 1 byte
-short s = 236; // 2 bytes
-int i = 153; // 4 bytes
-long l = 100L; // 8 bytes
-```
-
-- int and long default to int, specify L to declare as long
-
-#### Float Types:
-
-```java
-float f = 100.23f; // 4 bytes
-double d = 100.23; // 8 bytes
-```
-
-- float and double default to double, specify f to declare as float
-
-#### Non-numeric Types:
-
-```java
-boolean b = true; // 1 bit
-char c = 'c'; // 2 bytes (\u0000 to \uFFFF so UTF-16)
-```
-
-### 1.4 Reference Types (Objects)
-
-#### Key Points:
-
-- All reference types passed by reference
-
-#### Strings:
-
-```java
-String s = "hello world";
-```
-
-- When initiliased with a string literal, string object lives in the string pool
-- Any other string literals declared return the same reference
-- Strings that are instatiated have a separate reference in the heap
-- Strings are immutable (but can be reassigned normally)
-
-#### Objects:
-
-```java
-Object o = new Object();
 ```
 
 ### 1.5 Wrapper Classes
@@ -788,3 +791,73 @@ package myPackageName.subPackage;
 | `protected` | Yes          | Yes          | Yes                          | No              |
 | default     | Yes          | Yes          | No                           | No              |
 | `private`   | Yes          | No           | No                           | No              |
+
+## 9. Exception Handling
+
+### 9.1 Exceptions
+
+#### Checked Exceptions
+
+- Exceptions that are checked at compile-time
+- If a method can throw a checked exception, it **must** be handled by a `try-catch` block or declare it in the method's `throws` clause
+- Exception classes inherit from `java.lang.Exception`
+
+E.g:
+
+```java
+import java.io.*;
+
+try {
+  // throws exception if file.txt doesn't exist during compilation
+  FileReader file = new FileReader("file.txt");
+} catch (FileNotFoundException e) {
+  e.printStackTrace();
+}
+```
+
+#### Unchecked Exceptions
+
+- Exceptions that occur during runtime and are not checked at compile-time
+- Usually indicate bugs such as logic errors
+
+E.g:
+
+```java
+int[] arr = new int[5];
+System.out.println(arr[10]); // throws ArrayIndexOutOfBoundsException
+```
+
+#### `try-catch`
+
+- In `try-catch`, multiple `catch` blocks needed for each type of exception if they don't belong to the same class hierarchy
+- If they belong to the same hierarchy, more specific exception can be specified first
+- If there is no `try-catch` block, the exception propagates back through the call stack
+
+#### `throws`
+
+- `throws` used in a method declaration to indicate that it might throw a checked exception
+- Can include multiple exception types with a comma separated list
+- When a subclass overrides a parent's method with a `throws` clause, it **cannot declare new checked exceptions**
+- Can only declare the same exceptions, their subclasses or handle the declared exceptions (also applies to abstract classes and interfaces)
+- Meaning the method cannot also throw other kinds of expcetions
+
+E.g
+
+```java
+public void readFile() throws IOException {
+  // code that might throw an IOException
+}
+```
+
+### 9.2 Errors
+
+#### Key Notes:
+
+- Errors are serious problems that are outside of the control of the program
+- Occurs in situations where the application cannot recover and usually signal a fatal issue with the JVM
+- Error classes inherit from `java.lang.Error`
+
+#### Common Errors:
+
+- **OutOfMemoryError** - Thrown when the JVM runs out of memory
+- **StackOverflowError** - Thrown when the stack of a thread is exhausted (e.g infinite recursion)
