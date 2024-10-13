@@ -1,4 +1,4 @@
-package rebuiltProjects.knightsShortestPath;
+package projects.rebuilt.knightsShortestPath;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
