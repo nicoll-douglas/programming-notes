@@ -6,9 +6,8 @@
    1. [Variables](#11-variables)
    2. [Primitive Types](#12-primitive-types)
    3. [Reference Types (Objects)](#13-reference-types-objects)
-   4. [Enums](#14-enums)
-   5. [Wrapper Classes](#15-wrapper-classes)
-   6. [Class Constructors](#16-class-constructors)
+   4. [Wrapper Classes](#14-wrapper-classes)
+   5. [Class Constructors](#15-class-constructors)
 2. [Type Casting](#2-type-casting)
    1. [Implicit Casting (Widening)](#21-implicit-casting-widening)
    2. [Explicit Casting (Narrowing)](#22-explicit-casting-narrowing)
@@ -35,8 +34,7 @@
    2. [Encapsulation](#72-encapsulation)
    3. [Polymorphism](#73-polymorphism)
    4. [Abstraction](#74-abstraction)
-   5. [Interfaces](#75-interfaces)
-   6. [Association](#76-association)
+   5. [Association](#75-association)
 8. [Packages](#8-packages)
    1. [About Packages](#81-about-packages)
    2. [Access Modifiers](#82-access-modifiers)
@@ -117,83 +115,7 @@ String s = "hello world";
 Object o = new Object();
 ```
 
-### 1.4 Enums
-
-#### Key Notes:
-
-- Enum is a special type (similar to a class) to denote a group of constants and is denoted with uppercase starting letter
-- Enums can have fields, methods, constructors, nested classes, interfaces and enums like other classes
-- Type safe so you can only assign enum values to variables of the same enum type
-- Enums are immutable, cannot add or remove values once created (implicitly `public`, `static` and `final`, but can be `private` if not at the top level)
-- Cannot instantiate new enums, instances are created when the enum is loaded
-- Enums inherit methods from the `java.lang.Enum` class
-- Java also provides several built in enums (e.g `java.time.Month`)
-
-#### Example:
-
-```java
-public enum Day {
-  MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY;
-}
-```
-
-#### Fields, Methods & Constructors in Enums
-
-- Fields in Enums can store additional information about each constant
-- Enum constructors are used to initialise these values
-- Enum constructors are implicitly `private` and cannot take on any other access modifier
-- Enum constructors are called once per constant
-- Enums can have instance and static methods to be called on the constants or the enum itself
-- For instance members, `this` refers to the current constant
-
-E.g:
-
-```java
-public enum Fruit {
-  // constants use the Fruit constructor
-  APPLE("Red"),
-  BANANA("Yellow");
-
-  public final String color; // stores color of fruit constant
-
-  Fruit(String color) {
-    this.color = color;
-  }
-}
-
-Fruit fruit = Fruit.APPLE;
-fruit.color; // returns "Red"
-```
-
-#### Advanced Enums
-
-- Enums can implement interfaces much like classes
-- Enums can also have their own abstract methods
-- Each enum constant must provide its own custom implementation of all the abstract methods from their source
-
-##### Example:
-
-```java
-public enum Operation {
-  // if using a constructor, just utilise the syntax as normal to initiliase the instance fields
-  ADD {
-    @Override
-    public int apply(int x, int y) {
-      return x + y;
-    }
-  },
-  SUBTRACT {
-    @Override
-    public int apply(int x, int y) {
-      return x - y;
-    }
-  }
-
-  public abstract int apply(int x, int y);
-}
-```
-
-### 1.5 Wrapper Classes
+### 1.4 Wrapper Classes
 
 #### Key Notes:
 
@@ -230,7 +152,7 @@ Integer num = 5; // int converted to Integer instance
 int value = num; // Integer instance converted to primitive value
 ```
 
-### 1.6 Class Constructors
+### 1.5 Class Constructors
 
 #### Key Notes:
 
@@ -656,21 +578,14 @@ a.makeSound();  // "Animal makes a sound", object type is Animal
 - Abstraction hides the complex implementation details of the object and only exposes the essential features of the object
 - Achieved with **abstract classes** or **interfaces**
 
-#### Abstract Classes
-
-- Abstract classes are classes that cannot be instantiated and are specified with the `abstract` keyword
-- They may have both abstract methods (unimplemented) and concrete methods (implemented)
-- Abstract methods should be implemented by an adopting class
-- If not all abstract methods implemented, then the class **must** be defined with `abstract`
-
-#### Example of abstraction:
+#### Example:
 
 ```java
+// abstract class abstracts away a blueprint for implementing classes
 abstract class Animal {
   public abstract void makeSound();
 }
 
-// class is not abstract since all methods implemented
 class Dog extends Animal {
   // method is given concrete implementation
   @Override
@@ -680,24 +595,7 @@ class Dog extends Animal {
 }
 ```
 
-### 7.5 Interfaces
-
-#### Key Points:
-
-- Defines a set of methods as a characteristic that a class can implement
-- Abstract methods are implicitly `public` and **cannot** be defined otherwise; only static methods may have other modifiers
-- Classes can implement multiple interfaces (comma separation) allowing Java to overcome limitation of single inheritance (a class can only extend one other class)
-- Constants in interfaces are implicitly `public`, `static` and `final`
-- The `@FunctionalInterface` directive can be used to indicate a functional interface you define
-- Interfaces can inherit from other interfaces like classes with the `extends` keyword
-
-#### Types of Methods:
-
-- **Abstract** - a method with no body; must be given implementations in a class otherwise the class has to be defined with `abstract`
-- **Static** - a method that can be called on the interface itself
-- **Default** - a method with a default implementation; can be overriden by the implementing class (declared with the `default` keyword)
-
-### 7.6 Association
+### 7.5 Association
 
 #### Types of Association
 
@@ -891,15 +789,3 @@ System.out.println(arr[10]); // throws ArrayIndexOutOfBoundsException at runtime
 
 - **OutOfMemoryError** - Thrown when the JVM runs out of memory
 - **StackOverflowError** - Thrown when the stack of a thread is exhausted (e.g infinite recursion)
-
-## 10. Collections
-
-### 10.1 Hierarchies
-
-#### Iterable "Types"
-
-<img src="images/collections-iterable.png" width="700" alt="Iterable Hierarchy" />
-
-#### Map "Types"
-
-<img src="images/collections-map.png" width="700" alt="Map Hierarchy" />
