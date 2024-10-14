@@ -6,6 +6,16 @@
    1. [Interfaces](#11-interfaces)
    2. [Abstract Classes](#12-abstract-classes)
    3. [Enums](#13-enums)
+2. [Generics](#2-generics)
+   1. [About Generics](#21-about-generics)
+   2. [Generic Methods, Classes & Interfaces](#22-generic-methods-classes--interfaces)
+   3. [Bounded Type Parameters](#23-bounded-type-parameters)
+   4. [Wildcard Types](#24-wildcard-types)
+   5. [Inheritance](#25-inheritance)
+   6. [Type Erasure](#26-type-erasure)
+   7. [Restrictions](#27-restrictions)
+3. [Collections](#3-collections)
+   1. [Hierarchies](#31-hierarchies)
 
 ## 1. Advanced OOP
 
@@ -33,6 +43,35 @@
 - This means that the variable can refer to any object whose class implements that interface
 - Allows for polymorphism since you can change the concrete implementation of the object at runtime without changing the code that uses the interface
 - Allows for abstraction since code as such depends on the **behaviours** of the object rather than the specific implementation
+
+##### Example:
+
+```java
+interface Animal {
+  void makeSound();
+}
+
+class Dog implements Animal {
+  public void makeSound() {
+      System.out.println("Bark");
+  }
+}
+
+class Cat implements Animal {
+  public void makeSound() {
+      System.out.println("Meow");
+  }
+}
+
+Animal myAnimal = new Dog(); // myAnimal can hold any object that implements Animal
+myAnimal.makeSound(); // "Bark"
+
+myAnimal = new Cat(); // now it's a cat (run-time polymorphism)
+myAnimal.makeSound(); // "Meow"
+
+// the makeSound() method call is an example of abstraction
+// declaring myAnimal with Animal means we can care more about the behaviours rather than the implementation
+```
 
 ### 1.2 Abstract Classes
 
@@ -136,9 +175,167 @@ public enum Operation {
 }
 ```
 
-## 2. Collections
+## 2. Generics
 
-### 2.1 Hierarchies
+### 2.1 About Generics
+
+#### Key Points:
+
+- Generics allow you to parameterize classes, interfaces and methods
+- This means you can define a class or method that works with different types without sacrificing type safety
+
+#### Advantages:
+
+- Allows code reusability
+- Enforces compile-time type checking reducing the chance of a `ClassCastException` (you can't accidentally insert a value of the wrong type into a collection or object that uses generics
+  )
+- Generics remove the need for explicit casting
+
+E.g:
+
+```java
+List list = new ArrayList();
+list.add("Hello");
+String str = (String) list.get(0); // Explicit cast needed
+
+List<String> list2 = new ArrayList<>(); // String type in generic
+list2.add("Hello");
+String str = list.get(0); // No cast needed since type is concrete
+```
+
+### 2.2 Generic Methods, Classes & Interfaces
+
+#### Example 1 (Generic Methods)
+
+```java
+public <T> void method1(T param) {
+  // T is the type parameter
+}
+
+public <T, U> U method2(T t, U u) {
+  // T and U are the type parameters
+  return u; // returns type U
+}
+```
+
+#### Example 2 (Generic Class)
+
+```java
+// Class with type T
+class Box<T> {
+  T item;
+
+  Box(T item) {
+    this.item = item;
+  }
+}
+```
+
+#### Example 3 (Generic Interface)
+
+```java
+// interface with type T
+interface Reusable<T> {
+  void methodName(T param); // abstract method that operates on a param of the supplied type T
+}
+```
+
+### 2.3 Bounded Type Parameters
+
+- Used in scenarios where you want to restrict the types that can be passed as type arguments to a certain class or its subclasses
+
+Example:
+
+```java
+// T must be Number or any subclass of Number
+class Box<T extends Number> {
+  T item;
+
+  Box(T item) {
+      this.item = item;
+  }
+}
+```
+
+### 2.4 Wildcard Types
+
+#### Key Notes:
+
+- You cannot add elements to a collection with a wildcard type as the type cannot be guaranteed during compilation
+
+#### Example 1 (Unbounded)
+
+```java
+// ? represents the wildcard (unknown type)
+public void printList(List<?> list) {
+  for (Object obj : list) {
+    System.out.println(obj);
+  }
+}
+```
+
+#### Example 2 (Upper Bounded)
+
+```java
+// the list can only accept type Number or any subclass of Number
+public void display(List<? extends Number> list) {
+  for (Number num : list) {
+    System.out.println(num);
+  }
+}
+```
+
+#### Example 3 (Lower Bounded)
+
+```java
+// the list can only accept type Integer or any superclass of Integer
+public void addNumbers(List<? super Integer> list) {
+  list.add(100);
+}
+```
+
+### 2.5 Inheritance
+
+- Generics in Java do not support polymorphism and inheritance in the way regular types do
+- For example, `List<Integer>` is not a subclass of `List<Number>` even though `Integer` is a subclass of `Number`
+- They are treated as completely separate types
+
+Example:
+
+```java
+List<Number> numbers = new ArrayList<>();
+List<Integer> integers = new ArrayList<>();
+numbers = integers;  // Compilation error
+
+List<? extends Number> numbers2 = new ArrayList<>();
+numbers2 = integers; // correct as the wildcard type can accept Number or any subclass of Number (in this case Integer)
+```
+
+### 2.6 Type Erasure
+
+#### Key Notes;
+
+- Generics are implemented using type erasure
+- Means generic type information is replaced during compilation
+- Before compilation: `List<String>`
+- After compilation: `List`
+
+#### Example:
+
+```java
+List<String> list = new ArrayList<>();
+list instanceof List<String>; // cause compile-time error as the generic type information has been replaced
+```
+
+### 2.7 Restrictions
+
+- Static fields and methods cannot utilise generic types since they are tied to the instance of the class
+- You cannot use primitives as type arguments for generics (can only use wrappers)
+- You cannot instantiate objects of parameterized types (e.g `new T[10]` is illegal, type must be concrete)
+
+## 3. Collections
+
+### 3.1 Hierarchies
 
 #### Iterable "Types"
 
