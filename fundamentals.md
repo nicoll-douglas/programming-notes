@@ -1,4 +1,4 @@
-# Java Notes
+# Java Fundamentals
 
 ## Table of Contents
 
@@ -828,7 +828,7 @@ try {
 
 #### `try-catch`
 
-- In `try-catch`, multiple `catch` blocks needed for each type of exception if they don't belong to the same class hierarchy
+- In `try-catch`, multiple `catch` blocks needed for each type of exception if they don't belong to the same class hierarchy or can use bar operator (`|`)
 - If they belong to the same hierarchy, more specific exception can be specified first
 - If there is no `try-catch` block, the exception propagates up through the call stack
 
@@ -846,6 +846,23 @@ E.g
 public void readFile() throws IOException {
   // code that might throw an IOException
 }
+```
+
+#### Try-With-Resources
+
+- Simplifies resource management, such as closing files, sockets, or database connections, by automatically closing resources when the try block exits
+- Resources that implement the `AutoCloseable` or `Closeable` interface can be used in a try-with-resources block
+
+E.g
+
+```java
+try (BufferedReader reader = new BufferedReader(new FileReader("file.txt"))) {
+    String line = reader.readLine();
+    System.out.println(line);
+} catch (IOException e) {
+    e.printStackTrace();
+}
+// No need for a finally block; reader is automatically closed
 ```
 
 ### 9.2 Unchecked Exceptions
@@ -874,3 +891,15 @@ System.out.println(arr[10]); // throws ArrayIndexOutOfBoundsException at runtime
 
 - **OutOfMemoryError** - Thrown when the JVM runs out of memory
 - **StackOverflowError** - Thrown when the stack of a thread is exhausted (e.g infinite recursion)
+
+## 10. Collections
+
+### 10.1 Hierarchies
+
+#### Iterable "Types"
+
+<img src="images/collections-iterable.png" width="700" alt="Iterable Hierarchy" />
+
+#### Map "Types"
+
+<img src="images/collections-map.png" width="700" alt="Map Hierarchy" />
