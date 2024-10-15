@@ -1,5 +1,7 @@
 # Java Fundamentals
 
+Notes on fundamental Java concepts.
+
 ## Table of Contents
 
 1. [Variables, Data Types & Classes](#1-variables-data-types--classes)

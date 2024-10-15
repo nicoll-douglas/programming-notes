@@ -1,5 +1,7 @@
 # Intermediate Java
 
+Notes on intermediate level Java concepts.
+
 ## Table of Contents
 
 1. [Advanced OOP](#1-advanced-oop)
@@ -16,6 +18,11 @@
    7. [Restrictions](#27-restrictions)
 3. [Collections](#3-collections)
    1. [Hierarchies](#31-hierarchies)
+   2. [Lists](#32-lists)
+   3. [Queues](#33-queues)
+   4. [Sets](#34-sets)
+   5. [Maps](#35-maps)
+   6. [Time Complexity](#36-time-complexity)
 
 ## 1. Advanced OOP
 
@@ -43,6 +50,8 @@
 - This means that the variable can refer to any object whose class implements that interface
 - Allows for polymorphism since you can change the concrete implementation of the object at runtime without changing the code that uses the interface
 - Allows for abstraction since code as such depends on the **behaviours** of the object rather than the specific implementation
+- The **interface defines the contract**, meaning you can only call methods that the interface declares
+- The **object provides the implementation**, meaning the object provides the code for those methods
 
 ##### Example:
 
@@ -337,10 +346,226 @@ list instanceof List<String>; // cause compile-time error as the generic type in
 
 ### 3.1 Hierarchies
 
-#### Iterable "Types"
+#### Iterable Types
 
 <img src="images/collections-iterable.png" width="700" alt="Iterable Hierarchy" />
 
-#### Map "Types"
+#### Map Types
 
 <img src="images/collections-map.png" width="700" alt="Map Hierarchy" />
+
+### 3.2 Lists
+
+#### Key Notes:
+
+- The `List` interface represents an **ordered** sequence, **allows duplicate elements** and `null`
+- Extends the `Collection` interface which extends the `Iterable` interface
+- You can access elements by index, starting with 0
+- Provides methods for basic operations (`.get()`, `.add()`, `.remove()`)
+- All classes that implement `List` also implement the `ListIterator` interface (allows for forward or backwards traversal)
+- `ListIterator` interface is implemented by the abstract class `AbstractList` that lives inbetween `List` and the implementing classes
+
+##### Iterator Example:
+
+```java
+List<String> list = new ArrayList<>();
+
+Iterator<String> iterator = list.iterator(); // sequential iterator
+
+while (iterator.hasNext()) {
+  String element = iterator.next();
+  System.out.println(element);
+}
+```
+
+#### `ArrayList`
+
+- Class that implements the `List` interface
+- Automatic resizing (when elements get inserted or removed, all subsequent elements are shifted or unshifted)
+- Read operations are more efficient that write operations
+
+#### `LinkedList`
+
+- Class that implements the `List interface`
+- Is a doubly linked list implementation
+- Write operations (delete, insert) more efficient than read operations since list has to be traversed to reach element by index
+
+#### `Stack`
+
+- Subclass of `Vector` which implements the `List` interface
+- Provides a LIFO (Last-In-First-Out) stack mechanism/implementation
+- Has methods like `push()`, `pop()` and `peek()` for stack operations
+
+### 3.3 Queues
+
+#### Key Points:
+
+- Queue based collections implement the `Queue` interface
+- Queues are ordered and can allow duplicates
+- A queue follows the FIFO (First-In-First-Out) principle
+- Elements that remove take the first from the queue, elements that add insert at the end of the queue
+- Some queue implementations have bounds (i.e queues have a limit and be full)
+
+#### `Queue` Methods
+
+| Operation | Throws Exception on Failure | Returns Special Value                       |
+| --------- | --------------------------- | ------------------------------------------- |
+| Insert    | `add(E e)`                  | `offer(E e)` (boolean depending on success) |
+| Remove    | `remove()`                  | `poll()` (`null` if none)                   |
+| Examine   | `element()`                 | `peek()` (`null` if none)                   |
+
+#### `LinkedList`
+
+- Implements both the `List` and `Queue` interfaces
+- Provides a doubly linked-list that follows FIFO when used as a queue
+- Is unbounded
+
+E.g
+
+```java
+Queue<String> queue = new LinkedList<>();
+queue.offer("apple");
+queue.offer("banana");
+queue.poll(); // removes "apple"
+```
+
+#### `PriorityQueue`
+
+- Implements a priority-based queue
+- Elements are ordered either based on their natural ordering (if they implement `Comparable`) or using a provided `Comparator`
+- Not guaranteed to follow FIFO order; instead, elements with the highest priority (lowest value in terms of comparison) are dequeued first
+- Is unbounded
+
+```java
+Queue<Integer> pq = new PriorityQueue<>();
+pq.offer(5);
+pq.offer(2);
+pq.offer(10);
+pq.poll(); // removes 2 (the smallest element)
+```
+
+#### `ArrayDeque`
+
+- Implements a doubly-ended queue (deque / `Deque` interface) which allows for insertion and removal at both ends
+- Is more efficient than `LinkedList` for queues
+- Is unbounded
+
+### 3.4 Sets
+
+#### Key Notes:
+
+- Does not allow duplicate elements
+- If you try to add an element that already exists, the set will ignore it
+- Has no guaranteed order for its elements (some implementations like `LinkedHashSet` and `TreeSet` do maintain order)
+- Provides various operations for checking membership, adding/removing elements, and set operations like union, intersection, and difference
+- Two sets are equal if they contain the same elements, regardless of order
+- Sets are useful for ensuring **uniqueness** in a collection
+
+#### `HashSet`
+
+- Class that implements the `Set` interface
+- Uses a hash table for storing elements
+- Does not guarantee any order of elements
+- Is the most commonly used implementation
+- Allows **one** null element
+
+#### `LinkedHashSet`
+
+- Extends `HashSet` but maintains a linked list of entries which preservers insertion order
+- Iterates over the elements in the order in which they were added
+- Allows **one** null element
+
+#### `TreeSet`
+
+- Implements `NavigableSet` (which extends `SortedSet`), meaning it stores elements in a sorted order (natural order or using a custom comparator)
+- Does not allow **null** elements (throws `NullPointerException`)
+
+#### Set Operations
+
+- **Union**: Add all elements from one set to another (`.addAll()`)
+- **Intersection**: Retain only the common elements between two sets (`.retainAll()`)
+- **Difference**: Remove all elements in one set from another (`.removeAll()`)
+
+E.g
+
+```java
+List<Integer> set1Items = Arrays.asList(new Integer[]{1, 2, 3, 5});
+Set<Integer> set1 = new HashSet<>(set1Items);
+
+List<Integer> set2Items = Arrays.asList(new Integer[]{2, 3, 4});
+Set<Integer> set2 = new HashSet<>(set2Items);
+
+// Union of set1 and set2
+set1.addAll(set2);  // set1 now contains [1, 2, 3, 4, 5]
+System.out.println(set1);
+
+// Intersection of set1 and set2
+set1.retainAll(set2);  // set1 now contains [2, 3, 4]
+System.out.println(set1);
+
+// Difference between set1 and set2
+set1.removeAll(set2);  // set1 now contains []
+System.out.println(set1);
+```
+
+### 3.5 Maps
+
+#### Key Notes:
+
+- Maps represent a collection of key-value pairs
+- Each key is unique and maps to exactly one value
+- If you try to insert a key that already exists, the value will simply be overriden
+- Supports basic operations (`.put(K key, V value)`, `.get(Object key)`, `.containsKey(Object key)`)
+
+#### `HashMap`
+
+- Allows one `null` key and multiple `null` values
+- Is the most common implementation
+
+#### `Hashtable`
+
+- Does not allow `null` keys or `null` values
+
+#### `LinkedHashMap`
+
+- Maintains a linked list of entries in the order they were inserted (preserves insertion order)
+- Allows for predictable iteration
+
+#### `TreeMap`
+
+- Maintains a sorted order of keys (based on natural order if a custom `Comparator` for comparison)
+- Useful when you need a sorted map that provides a range of keys based on natural order
+
+### 3.6 Time Complexity
+
+#### Lists
+
+| Implementation | Access | Search | Insertion | Deletion |
+| -------------- | ------ | ------ | --------- | -------- |
+| ArrayList      | O(1)   | O(n)   | O(n)      | O(n)     |
+| LinkedList     | O(n)   | O(n)   | O(1)      | O(1)     |
+
+#### Queues
+
+| Implementation        | Access | Search | Insertion | Deletion |
+| --------------------- | ------ | ------ | --------- | -------- |
+| LinkedList (as Queue) | O(1)   | O(n)   | O(1)      | O(1)     |
+| ArrayDeque            | O(1)   | O(n)   | O(1)      | O(1)     |
+| PriorityQueue         | O(1)   | O(n)   | O(log n)  | O(log n) |
+
+#### Sets
+
+| Implementation | Access   | Search   | Insertion | Deletion |
+| -------------- | -------- | -------- | --------- | -------- |
+| HashSet        | O(1)     | O(1)     | O(1)      | O(1)     |
+| LinkedHashSet  | O(1)     | O(1)     | O(1)      | O(1)     |
+| TreeSet        | O(log n) | O(log n) | O(log n)  | O(log n) |
+
+#### Maps
+
+| Implementation | Access   | Search   | Insertion | Deletion |
+| -------------- | -------- | -------- | --------- | -------- |
+| HashMap        | O(1)     | O(1)     | O(1)      | O(1)     |
+| LinkedHashMap  | O(1)     | O(1)     | O(1)      | O(1)     |
+| HashTable      | O(1)     | O(1)     | O(1)      | O(1)     |
+| TreeMap        | O(log n) | O(log n) | O(log n)  | O(log n) |
