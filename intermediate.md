@@ -570,3 +570,21 @@ System.out.println(set1);
 | LinkedHashMap  | O(1)     | O(1)     | O(1)      | O(1)     |
 | HashTable      | O(1)     | O(1)     | O(1)      | O(1)     |
 | TreeMap        | O(log n) | O(log n) | O(log n)  | O(log n) |
+
+## 4. JVM
+
+### 4.1 About the JVM
+
+#### Key Points:
+
+- Stands for Java Virtual Machine
+- You write Java source code in `.java` files
+- The Java source code is compiled by the Java compiler (`javac`) into **bytecode** (`.class` files) which is a platform-independent intermediate representation
+- The JVM then loads, verifies and executes the bytecode
+- The JVM translates the bytecode into machine code for the host system and interprets code when necessary
+
+#### JDK vs JRE vs JVM
+
+<img src="images/jdk.png" width="500" alt="JDK vs JRE vs JVM" />
+
+### 4.2 Components
