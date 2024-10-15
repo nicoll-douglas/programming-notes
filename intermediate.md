@@ -386,7 +386,7 @@ while (iterator.hasNext()) {
 
 #### `LinkedList`
 
-- Class that implements the `List interface`
+- Class that implements the `List` interface
 - Is a doubly linked list implementation
 - Write operations (delete, insert) more efficient than read operations since list has to be traversed to reach element by index
 
@@ -516,6 +516,7 @@ System.out.println(set1);
 - Each key is unique and maps to exactly one value
 - If you try to insert a key that already exists, the value will simply be overriden
 - Supports basic operations (`.put(K key, V value)`, `.get(Object key)`, `.containsKey(Object key)`)
+- The `.containsKey()` and `.get()` methods are dependent on the output of the `.hashCode()` and `.equals()` method calls on the object
 
 #### `HashMap`
 
