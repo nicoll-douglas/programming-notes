@@ -5,10 +5,13 @@ Notes on intermediate level Java concepts.
 ## Table of Contents
 
 1. [Advanced OOP](#1-advanced-oop)
+
    1. [Interfaces](#11-interfaces)
    2. [Abstract Classes](#12-abstract-classes)
    3. [Enums](#13-enums)
+
 2. [Generics](#2-generics)
+
    1. [About Generics](#21-about-generics)
    2. [Generic Methods, Classes & Interfaces](#22-generic-methods-classes--interfaces)
    3. [Bounded Type Parameters](#23-bounded-type-parameters)
@@ -16,13 +19,20 @@ Notes on intermediate level Java concepts.
    5. [Inheritance](#25-inheritance)
    6. [Type Erasure](#26-type-erasure)
    7. [Restrictions](#27-restrictions)
+
 3. [Collections](#3-collections)
+
    1. [Hierarchies](#31-hierarchies)
    2. [Lists](#32-lists)
    3. [Queues](#33-queues)
    4. [Sets](#34-sets)
    5. [Maps](#35-maps)
    6. [Time Complexity](#36-time-complexity)
+
+4. [JVM](#4-jvm)
+
+   1. [About the JVM](#41-about-the-jvm)
+   2. [Architecture](#42-architecture)
 
 ## 1. Advanced OOP
 
@@ -183,6 +193,8 @@ public enum Operation {
   public abstract int apply(int x, int y);
 }
 ```
+
+### 1.4 Anonymous Classes
 
 ## 2. Generics
 
@@ -587,4 +599,85 @@ System.out.println(set1);
 
 <img src="images/jdk.png" width="500" alt="JDK vs JRE vs JVM" />
 
-### 4.2 Components
+### 4.2 Architecture
+
+#### Class Loader
+
+- The class loader is responsible for loading Java class files into memory when they are referenced in the program
+- **Loading**: The class loader finds the class file and loads its bytecode
+- **Linking**: Verifies the bytecode for correctness, allocates memory for static fields and resolves symbolic references to actual memory addresses
+- **Initialization**: The class is initialized, including the execution of static initializers and initialization of static variables
+
+#### Runtime Data Areas
+
+- **Method Area**: Stores class-level data such as static variables, constants, method data and bytecode for methods
+- **Heap**: Where all objects and their instance variables are allocated. Is shared by all threads and is managed by the garbage collector
+- **Stack**: Each thread has its own stack which stores local variables, partial results and call frames (holds the state for a single method invocation such as parameters, local variables and return addresses)
+- **Program Counter (PC) Register**: Each thread has a PC register, which holds the address of the current instruction being executed
+- **Native Method Stack**: Used when the JVM calls native (platform-specific) methods written in languages like C or C++
+
+#### Execution Engine
+
+- **Interpreter**: Reads and executes bytecode instructions one at a time but can be slow
+- **Just-In-Time (JIT) Compiler**: Compiles frequently executed bytecode sequences into native machine code at runtime. Stores it in the code cache and executes it directly when necessary which significantly boosts performance
+- **Garbage Collector**: Identifies and removes objects in the heap that are no longer references by any part of the program, freeing up memory
+
+## 5. Memory Leaks
+
+### 5.1 Overview
+
+- Occurs when objects that are no longer needed by the application continue to be referenced preventing garbage collection
+
+### 5.2 Case 1 - Object Retention in Static Fields
+
+- Objects referenced in static fields are retained for the entire lifetime of the application
+- No garbage collection until the application shuts down
+- Even if no longer used, they will stay in memory
+
+### 5.3 Case 2 - Improper Resource Closure
+
+- Forgetting to explicitly close resources like file streams, database connections, or sockets can lead to memory leaks since those resources may not be automatically closed by the garbage collector
+- Use a try with resources block to automatically close resources when the block ends
+
+E.g
+
+```java
+try {
+  FileInputStream fis = new FileInputStream("file.txt");
+// Forgetting to close the file stream leads to resource leaks
+} catch (IOException e) {}
+```
+
+### 5.4 Case 3 - Non-Static Inner Classes
+
+- Non-static inner classes hold an implicit reference to their outer class
+- This can prevent the outer class from being garbage collected even after it is no longer needed
+
+E.g
+
+```java
+public class OuterClass {
+  private String someData = "OuterClass data";
+
+  // Non-static inner class (holds a reference to OuterClass)
+  class InnerTask implements Runnable {
+    @Override
+    public void run() {
+      System.out.println("Accessing outer class data: " + someData);
+    }
+  }
+
+  static class TaskManager {
+    private static List<Runnable> tasks = new ArrayList<>();
+
+    public static void register(Runnable task) {
+      tasks.add(task);  // Long-lived reference
+    }
+  }
+
+  // Register a long-lived task
+  public void registerTask() {
+    TaskManager.register(new InnerTask());  // InnerTask holds a reference to OuterClass
+  }
+}
+```

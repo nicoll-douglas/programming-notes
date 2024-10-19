@@ -5,42 +5,59 @@ Notes on fundamental Java concepts.
 ## Table of Contents
 
 1. [Variables, Data Types & Classes](#1-variables-data-types--classes)
+
    1. [Variables](#11-variables)
    2. [Primitive Types](#12-primitive-types)
    3. [Reference Types (Objects)](#13-reference-types-objects)
    4. [Wrapper Classes](#14-wrapper-classes)
    5. [Class Constructors](#15-class-constructors)
+
 2. [Type Casting](#2-type-casting)
+
    1. [Implicit Casting (Widening)](#21-implicit-casting-widening)
    2. [Explicit Casting (Narrowing)](#22-explicit-casting-narrowing)
    3. [Boolean Contexts](#23-boolean-contexts)
    4. [Upcasting](#24-upcasting)
    5. [Downcasting](#25-downcasting)
+
 3. [Operators & Keywords](#3-operators--keywords)
+
    1. [Equality](#31-equality)
    2. [`null`](#32-null)
    3. [`switch`](#33-switch)
    4. [`instanceof`](#34-instanceof)
    5. [XOR](#35-xor)
+
 4. [Loops](#4-loops)
+
    1. [For-each Loop](#41-for-each-loop)
+
 5. [Arrays](#5-arrays)
+
    1. [About Arrays](#51-about-arrays)
    2. [Creating Arrays](#52-creating-arrays)
+
 6. [Functions](#6-functions)
+
    1. [Method Overloading](#61-method-overloading)
    2. [Lambda Expressions](#62-lambda-expressions)
    3. [Method References](#63-method-references)
+
 7. [OOP](#7-oop)
+
    1. [Inheritance](#71-inheritance)
    2. [Encapsulation](#72-encapsulation)
    3. [Polymorphism](#73-polymorphism)
    4. [Abstraction](#74-abstraction)
    5. [Association](#75-association)
+
 8. [Packages](#8-packages)
+
    1. [About Packages](#81-about-packages)
    2. [Access Modifiers](#82-access-modifiers)
+
 9. [Exception Handling](#9-exception-handling)
+
    1. [Checked Exceptions](#91-checked-exceptions)
    2. [Unchecked Exceptions](#92-unchecked-exceptions)
    3. [Errors](#93-errors)
