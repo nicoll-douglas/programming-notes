@@ -40,7 +40,6 @@ Notes on intermediate level Java concepts.
    1. [Overview](#51-overview)
    2. [Case 1 - Object Retention in Static Fields](#52-case-1---object-retention-in-static-fields)
    3. [Case 2 - Improper Resource Closure](#53-case-2---improper-resource-closure)
-   4. [Case 3 - Non-Static Inner Classes](#54-case-3---non-static-inner-classes)
 
 ## 1. Advanced OOP
 
@@ -687,29 +686,4 @@ try {
   FileInputStream fis = new FileInputStream("file.txt");
 // Forgetting to close the file stream leads to resource leaks
 } catch (IOException e) {}
-```
-
-### 5.4 Case 3 - Non-Static Inner Classes
-
-- Non-static inner classes hold an implicit reference to their outer class
-- If the inner class is still "alive", the outer class will **not** be garbage collected
-
-E.g
-
-```java
-public class OuterClass {
-  private String data = "Outer class data";
-
-  public class InnerClass {
-    public void printData() {
-      System.out.println(data);  // holds reference to OuterClass's data and therefore OuterClass
-    }
-  }
-
-  public void createInnerClass() {
-    InnerClass inner = new InnerClass();
-    // Do something with inner
-    // OuterClass cannot be garbage collected as long as the "inner" object exists
-  }
-}
 ```
