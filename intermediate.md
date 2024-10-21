@@ -9,6 +9,7 @@ Notes on intermediate level Java concepts.
    1. [Interfaces](#11-interfaces)
    2. [Abstract Classes](#12-abstract-classes)
    3. [Enums](#13-enums)
+   4. [Anonymous Classes](#14-anonymous-classes)
 
 2. [Generics](#2-generics)
 
@@ -33,6 +34,13 @@ Notes on intermediate level Java concepts.
 
    1. [About the JVM](#41-about-the-jvm)
    2. [Architecture](#42-architecture)
+
+5. [Memory Leaks](#5-memory-leaks)
+
+   1. [Overview](#51-overview)
+   2. [Case 1 - Object Retention in Static Fields](#52-case-1---object-retention-in-static-fields)
+   3. [Case 2 - Improper Resource Closure](#53-case-2---improper-resource-closure)
+   4. [Case 3 - Non-Static Inner Classes](#54-case-3---non-static-inner-classes)
 
 ## 1. Advanced OOP
 
@@ -195,6 +203,38 @@ public enum Operation {
 ```
 
 ### 1.4 Anonymous Classes
+
+#### Key Points:
+
+- A local class that is declared and instantiated all in one statement
+- Used when you want to create a one-time-use subclass or implementation; simplifies code
+- Can be more concise with a lambda expression if working with functional interfaces
+
+#### Syntax:
+
+```java
+new SuperClassOrInterface() {
+  // body
+}
+```
+
+#### Example:
+
+```java
+class Animal {
+  public void makeSound() {
+    System.out.println("Animal makes a sound");
+  }
+}
+
+Animal myAnimal = new Animal() { // can use parameters like normal when instantiating
+  @Override
+  public void makeSound() {
+    System.out.println("Woof!");
+  }
+}; // can also call the method immediately by appending .makeSound without assignment
+myAnimal.makeSound();  // Woof!
+```
 
 ## 2. Generics
 
@@ -633,6 +673,7 @@ System.out.println(set1);
 - Objects referenced in static fields are retained for the entire lifetime of the application
 - No garbage collection until the application shuts down
 - Even if no longer used, they will stay in memory
+- Avoid overly large static collections of objects
 
 ### 5.3 Case 2 - Improper Resource Closure
 
@@ -651,33 +692,24 @@ try {
 ### 5.4 Case 3 - Non-Static Inner Classes
 
 - Non-static inner classes hold an implicit reference to their outer class
-- This can prevent the outer class from being garbage collected even after it is no longer needed
+- If the inner class is still "alive", the outer class will **not** be garbage collected
 
 E.g
 
 ```java
 public class OuterClass {
-  private String someData = "OuterClass data";
+  private String data = "Outer class data";
 
-  // Non-static inner class (holds a reference to OuterClass)
-  class InnerTask implements Runnable {
-    @Override
-    public void run() {
-      System.out.println("Accessing outer class data: " + someData);
+  public class InnerClass {
+    public void printData() {
+      System.out.println(data);  // holds reference to OuterClass's data and therefore OuterClass
     }
   }
 
-  static class TaskManager {
-    private static List<Runnable> tasks = new ArrayList<>();
-
-    public static void register(Runnable task) {
-      tasks.add(task);  // Long-lived reference
-    }
-  }
-
-  // Register a long-lived task
-  public void registerTask() {
-    TaskManager.register(new InnerTask());  // InnerTask holds a reference to OuterClass
+  public void createInnerClass() {
+    InnerClass inner = new InnerClass();
+    // Do something with inner
+    // OuterClass cannot be garbage collected as long as the "inner" object exists
   }
 }
 ```
