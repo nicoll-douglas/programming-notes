@@ -35,11 +35,10 @@ Notes on intermediate level Java concepts.
    1. [About the JVM](#41-about-the-jvm)
    2. [Architecture](#42-architecture)
 
-5. [Memory Leaks](#5-memory-leaks)
+5. [Memory](#5-memory)
 
-   1. [Overview](#51-overview)
-   2. [Case 1 - Object Retention in Static Fields](#52-case-1---object-retention-in-static-fields)
-   3. [Case 2 - Improper Resource Closure](#53-case-2---improper-resource-closure)
+   1. [Garbage Collection](#51-garbage-collection)
+   2. [Memory Leaks](#52-memory-leaks)
 
 ## 1. Advanced OOP
 
@@ -661,25 +660,50 @@ System.out.println(set1);
 - **Just-In-Time (JIT) Compiler**: Compiles frequently executed bytecode sequences into native machine code at runtime. Stores it in the code cache and executes it directly when necessary which significantly boosts performance
 - **Garbage Collector**: Identifies and removes objects in the heap that are no longer references by any part of the program, freeing up memory
 
-## 5. Memory Leaks
+## 5. Memory
 
-### 5.1 Overview
+### 5.1 Garbage Collection
+
+#### Key Points:
+
+- Objects stored in the heap where all dynamic memory allocation occurs for objects at runtime
+- Is the process of identifying and reclaiming memory that is no longer referenced by the program
+- Objects eligible for garbage collection are not **reachable** i.e cannot be traced from **GC Roots**
+
+#### GC Roots:
+
+- Active threads
+- Local variables and method parameters in the current execution stack
+- Static fields of loaded classes
+- JNI (Java Native Interface) references
+
+#### Example:
+
+```java
+Object a = new Object(); // unreachable reference is now eligible for GC after being overriden
+a = new Object();
+
+```
+
+### 5.2 Memory Leaks
+
+#### Key Points:
 
 - Occurs when objects that are no longer needed by the application continue to be referenced preventing garbage collection
 
-### 5.2 Case 1 - Object Retention in Static Fields
+#### Case 1 - Object Retention in Static Fields
 
 - Objects referenced in static fields are retained for the entire lifetime of the application
 - No garbage collection until the application shuts down
 - Even if no longer used, they will stay in memory
 - Avoid overly large static collections of objects
 
-### 5.3 Case 2 - Improper Resource Closure
+#### Case 2 - Improper Resource Closure
 
 - Forgetting to explicitly close resources like file streams, database connections, or sockets can lead to memory leaks since those resources may not be automatically closed by the garbage collector
 - Use a try with resources block to automatically close resources when the block ends
 
-E.g
+##### Example:
 
 ```java
 try {
