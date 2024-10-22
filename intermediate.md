@@ -49,9 +49,17 @@ Notes on intermediate level Java concepts.
    5. [Limitations](#65-limitations)
 
 7. [Functional Streams](#7-functional-streams)
+
    1. [Overview](#71-overview)
    2. [Stream Operations](#72-stream-operations)
    3. [Parallel Streams](#73-parallel-streams)
+
+8. [Basics of Threads](#8-basics-of-threads)
+
+   1. [Overview](#81-overview)
+   2. [Creating Threads](#82-creating-threads)
+   3. [Thread States](#83-thread-states)
+   4. [Thread Methods](#84-thread-methods)
 
 ## 1. Advanced OOP
 
@@ -871,4 +879,152 @@ int sum = numbers.parallelStream().reduce(0, Integer::sum);
 
 System.out.println(sum); // 21
 
+```
+
+## 8. Basics of Threads
+
+### 8.1 Overview
+
+#### Key Points:
+
+- A thread is a lightweight sub-process, a small unit of processing that can be executed independently
+- In Java, threads allow concurrent execution of two or more parts of a program, meaning that multiple tasks can be performed simultaneously
+- This is known as multithreading
+- Built-in support for multithreading through the `java.lang.Thread` class and `java.lang.Runnable` interface
+- Threads have a priority; a thread with a high priority is executed in preference to a thread with lower priority (priority ranges 1-10, 5 being the default)
+- The JVM continues to execute threads until either A, `System.exit()` is called or all **user** threads have died
+
+#### Why Use Threads:
+
+- **Improving performance**: By splitting tasks, threads can make better use of multi-core CPUs
+- **Concurrency**: Multiple threads can handle tasks like reading/writing files, database access, or handling multiple client requests in a server simultaneously
+- **Background tasks**: Threads allow you to perform background tasks (e.g., downloading files, processing data) without blocking the main application
+
+### 8.2 Creating Threads
+
+- Can be created by implementing the `Runnable` interface into a class
+- The `Thread.start()` method internally calls `.run()`
+
+E.g
+
+```java
+class MyRunnable implements Runnable {
+  @Override
+  public void run() {
+    // Code to be executed by the thread
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+    MyRunnable myRunnable = new MyRunnable();
+    Thread thread1 = new Thread(myRunnable);
+    thread1.start();  // Starts the thread
+
+    Thread thread2 = new Thread(myRunnable);
+    thread2.start();  // Starts another thread
+  }
+}
+```
+
+### 8.3 Thread States
+
+#### A thread can be in one of the following states:
+
+- **NEW**: The thread is created but not yet started (`Thread` object created)
+- **RUNNABLE**: The thread is eligible to run, either running or waiting for CPU time
+- **BLOCKED**: The thread is waiting for a monitor lock (e.g., when waiting for synchronized code)
+- **WAITING**: The thread is waiting indefinitely for another thread to perform a particular action (e.g., `Object.wait()`)
+- **TIMED_WAITING**: The thread is waiting for a specified amount of time (e.g., `Thread.sleep()`, `Object.wait(long)`)
+- **TERMINATED**: The thread has finished execution (either completed normally or was terminated abnormally)
+
+### 8.4 Thread Methods
+
+#### Common Thread Methods:
+
+- `.start()`: Starts the thread and calls its run() method in a new thread
+- `.run()`: The entry point for the thread, where the thread’s code is executed
+- `.sleep(long millis)`: Pauses the thread for the specified amount of time (in milliseconds)
+- `.join()`: Waits for the thread to complete. The main thread can wait for other threads to finish using this method
+
+### 8.5 Synchronization
+
+#### Key Points:
+
+- In a multithreading environment, threads often have access to shared resources (e.g variables, files)
+- Java provides synchronization to control access to shared resources and ensure thread-safety
+- Without synchronization, race conditions can occur meaning one thread may try to change a shared resource whilst another is trying to read or update it at the same time causing inconsistent data
+- Synchronization occurs at the object level so different objects have different locks
+
+#### Synchronized Methods:
+
+```java
+public synchronized void print() {
+  // Only one thread can access this method at a time
+}
+```
+
+#### Synchronized Blocks:
+
+##### Syntax:
+
+```java
+public void print() {
+  synchronized (lockObject) {
+    // Only one thread can execute this block at a time
+  }
+}
+```
+
+##### Using `this` as a Lock Object:
+
+- You can also use `this` as the lock object
+- This means that only one thread can enter any synchronized block that uses `this` as the lock for the same object at the same time
+
+#### Synchronization In Action
+
+```java
+class Counter {
+  private int count = 0;
+
+  // Thread-safe; race conditions occur without the synchronized keyword
+  public synchronized void increment() {
+    count++;
+  }
+
+  public int getCount() {
+    return count;
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+    Counter counter = new Counter();
+
+    Thread t1 = new Thread(() -> {
+      for (int i = 0; i < 1000; i++) {
+        counter.increment();
+      }
+    });
+
+    Thread t2 = new Thread(() -> {
+      for (int i = 0; i < 1000; i++) {
+        counter.increment();
+      }
+    });
+
+    t1.start();
+    t2.start();
+
+    try {
+      t1.join();
+      t2.join();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    // final output will consistently be 2000
+    System.out.println("Final Count: " + counter.getCount());
+  }
+}
 ```
