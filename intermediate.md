@@ -40,6 +40,14 @@ Notes on intermediate level Java concepts.
    1. [Garbage Collection](#51-garbage-collection)
    2. [Memory Leaks](#52-memory-leaks)
 
+6. [Serialization](#6-serialization)
+
+   1. [Overview](#61-overview)
+   2. [Deserialization](#62-deserialization)
+   3. [SerialVersionUID](#63-serialversionuid)
+   4. [Transient Keyword](#64-transient-keyword)
+   5. [Limitations](#65-limitations)
+
 ## 1. Advanced OOP
 
 ### 1.1 Interfaces
@@ -711,3 +719,85 @@ try {
 // Forgetting to close the file stream leads to resource leaks
 } catch (IOException e) {}
 ```
+
+## 6. Serialization
+
+### 6.1 Overview
+
+#### Key Points:
+
+- Process of converting an object into a byte stream
+- The byte stream represents the object's data, its type (class) and the types of its fields
+- Once serialized, can be saved, transferred or sent over a network
+- Can later be deserialized by converting the byte stream into a copy of the original object
+- A class must implement the `java.io.Serializable` interface in order for its objects to be serialized and deserialized
+- The `Serializable` interface is just a marker interface; doesn't declare any methods, just tells the compiler the class's objects are eligible for serialization
+- The `.close()` method can be used to close streams or a try-with-resources block
+- The `.flush()` method can be used on the `ObjectOutputStream` to write data prematurely without closing the stream
+
+#### Example:
+
+```java
+import java.io.*;
+
+class Person implements Serializable {};
+
+Person person = new Person();
+
+// use ObjectOutputStream to write object to a file or stream
+try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("person.ser"))) {
+  oos.writeObject(person); // Write the object to a file
+} catch (IOException e) {
+  e.printStackTrace();
+}
+```
+
+### 6.2 Deserialization
+
+#### Key Points:
+
+- The opposite of deserialization
+- The byte stream is converted back into a Java object using `ObjectInputStream`
+
+#### Example (Previous):
+
+```java
+try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("person.ser"))) {
+  Person person = (Person) ois.readObject(); // Read the object from the file
+} catch (IOException | ClassNotFoundException e) {
+  e.printStackTrace();
+}
+```
+
+### 6.3 SerialVersionUID
+
+#### Key Points:
+
+- The `serialVersionUID` is a unique version identifier for each class
+- Helps during deserialization to verify that the sender and receiver of a serialized object have loaded classes for that object that are compatible
+- If no `serialVersionUID` is declared, Java automatically generates one at runtime
+- Recommended to **explicitly** declare one to avoid issues when the class is modified after serialization
+- If the class definition changes (e.g a field is added or removed) and the `serialVersionUID` doesn't match, Java will throw an `InvalidClassException` during deserialization
+
+#### Example:
+
+```java
+private static final long serialVersionUID = 1L;
+```
+
+### 6.4 Transient Keyword
+
+- If you want to prevent a particular field from being serialized, you can mark it as `transient`
+- This means that during serialization, the field will not be saved to the byte stream, and its value will be ignored
+
+E.g
+
+```java
+transient int age = 10; // field wouldn't be serialized
+```
+
+### 6.5 Limitations
+
+- **Versioning Issues**: Changes to the class structure can break the deserialization process if not handled correctly with `serialVersionUID`
+- **Performance**: Serialization can be slower than other persistence models like JSON; can also increase the file size or network overhead
+- **Security**: Deserializing untrusted data can lead to vulnerabilites like **Remote Code Execution (RCE)**
