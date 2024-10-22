@@ -60,6 +60,7 @@ Notes on intermediate level Java concepts.
    2. [Creating Threads](#82-creating-threads)
    3. [Thread States](#83-thread-states)
    4. [Thread Methods](#84-thread-methods)
+   5. [Synchronization](#85-synchronization)
 
 ## 1. Advanced OOP
 
