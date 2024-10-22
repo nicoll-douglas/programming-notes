@@ -48,6 +48,11 @@ Notes on intermediate level Java concepts.
    4. [Transient Keyword](#64-transient-keyword)
    5. [Limitations](#65-limitations)
 
+7. [Functional Streams](#7-functional-streams)
+   1. [Overview](#71-overview)
+   2. [Stream Operations](#72-stream-operations)
+   3. [Parallel Streams](#73-parallel-streams)
+
 ## 1. Advanced OOP
 
 ### 1.1 Interfaces
@@ -801,3 +806,69 @@ transient int age = 10; // field wouldn't be serialized
 - **Versioning Issues**: Changes to the class structure can break the deserialization process if not handled correctly with `serialVersionUID`
 - **Performance**: Serialization can be slower than other persistence models like JSON; can also increase the file size or network overhead
 - **Security**: Deserializing untrusted data can lead to vulnerabilites like **Remote Code Execution (RCE)**
+
+## 7. Functional Streams
+
+### 7.1 Overview
+
+#### Key points:
+
+- API that lets you process collections of data (e.g `List`, `Set`, `Map`) in a functional manner (`java.util.stream`)
+- Provides methods for for performing operations like filtering, mapping, and reducing in a pipeline fashion, supporting parallelism and efficiency
+- Streams can be created from Collections, Arrays or other data sources (like files)
+
+#### Key Concepts:
+
+- **Stream**: Represents a sequence of elements supporting sequential and parallel aggregate operations
+- **Pipeline**: A stream operation consists of a source, intermediate operations (like filtering or mapping), and a terminal operation (like `collect`, `forEach`, or `reduce`)
+- **Lazy Evaluation**: Intermediate operations are lazily evaluated (only executed when a terminal operation is invoked)
+
+### 7.2 Stream Operations
+
+#### Intermediate Operations (return a new stream):
+
+- `.filter(Predicate)`: Filters elements based on a condition
+- `.map(Function)`: Transforms elements from one type to another
+- `.sorted()`: Sorts the elements of the stream
+- `.distinct()`: Removes duplicates from the stream
+
+#### Terminal Operations (produce a result or side-effect):
+
+- `.forEach(Consumer)`: Performs an action on each element
+- `.collect(Collector)`: Converts the stream into a collection (e.g., List, Set)
+- `.reduce(BinaryOperator)`: Reduces the elements of the stream into a single value (e.g., summing numbers)
+- `.count()`: Returns the number of elements in the stream
+
+#### Example:
+
+```java
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+List<String> names = Arrays.asList("Alice", "Bob", "Charlie", "David");
+
+// Stream pipeline: filter names starting with 'C', map to uppercase, collect to List
+List<String> filteredNames = names.stream()
+        .filter(name -> name.startsWith("C")) // Intermediate
+        .map(String::toUpperCase) // Intermediate
+        .collect(Collectors.toList()); // Terminal
+
+System.out.println(filteredNames);  // [CHARLIE]
+```
+
+### 7.3 Parallel Streams
+
+- You can easily process large datasets in parallel using parallel streams, which divide the stream into multiple parts and process them concurrently using multiple threads
+
+E.g
+
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+
+// Sum all numbers in parallel
+int sum = numbers.parallelStream().reduce(0, Integer::sum);
+
+System.out.println(sum); // 21
+
+```
